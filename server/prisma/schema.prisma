@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  passwordHash String
+  createdAt    DateTime        @default(now())
+  goals        Goal[]
+  checkins     MonthlyCheckin[]
+}
+
+model Goal {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  type          String    // 'counter' | 'binary' | 'rule'
+  unit          String?
+  target        Float?
+  value         Float     @default(0)
+  status        String    @default("not_started") // 'not_started' | 'in_progress' | 'done'
+  nextMilestone String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model MonthlyCheckin {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthKey     String   // 'YYYY-MM'
+  highlight    String   @default("")
+  blocker      String   @default("")
+  notes        String   @default("")
+  snapshotJson String   @default("{}") // JSON string of goal snapshots
+  createdAt    DateTime @default(now())
+
+  @@index([userId, monthKey])
+}
+

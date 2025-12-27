@@ -1,0 +1,140 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.4s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.logoIcon {
+  font-size: 32px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.tabs {
+  display: flex;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabActive {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.error {
+  padding: 12px 16px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--accent-danger);
+  font-size: 14px;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.link {
+  color: var(--accent-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  color: var(--accent-secondary);
+}
+

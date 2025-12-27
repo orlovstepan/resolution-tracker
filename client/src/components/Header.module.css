@@ -1,0 +1,65 @@
+.header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+  border-radius: 4px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.email {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .email {
+    display: none;
+  }
+  
+  .title {
+    font-size: 16px;
+  }
+}
+

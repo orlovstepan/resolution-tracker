@@ -1,0 +1,161 @@
+.container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.monthSelect {
+  min-width: 160px;
+}
+
+.list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.emptyHint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.item {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.itemDate {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.itemActions {
+  display: flex;
+  gap: 4px;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.sectionIcon {
+  flex-shrink: 0;
+}
+
+.emptyCheckin {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.snapshot {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.snapshotTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.snapshotGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.snapshotItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.snapshotGoal {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.snapshotValue {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls {
+    justify-content: space-between;
+  }
+}
+
