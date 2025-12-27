@@ -2,8 +2,6 @@
 
 A minimal web application to track yearly resolutions and monthly check-ins. Built with React + TypeScript (frontend) and Express + Prisma + SQLite (backend).
 
-![Resolution Tracker](https://img.shields.io/badge/Status-Ready-brightgreen)
-
 ## Features
 
 - ✅ **User Authentication** - Email/password signup & login with JWT cookies
@@ -20,84 +18,203 @@ A minimal web application to track yearly resolutions and monthly check-ins. Bui
 
 - **Frontend:** React 18, TypeScript, Vite
 - **Backend:** Node.js, Express, TypeScript
-- **Database:** SQLite (with Prisma ORM)
+- **Database:** SQLite (Prisma ORM)
 - **Auth:** JWT with httpOnly cookies
-- **Styling:** CSS Modules
 
-## Quick Start
+---
+
+## 🚀 Quick Start (Local Development)
 
 ### Prerequisites
+- Node.js 18+
 
-- Node.js 18+ 
-- npm or yarn
-
-### 1. Clone and Install
+### Setup
 
 ```bash
-# Clone the repository
-cd resolution-tracker
+# 1. Install dependencies
+cd server && npm install
+cd ../client && npm install
 
-# Install server dependencies
-cd server
-npm install
+# 2. Create server/.env file
+cd ../server
+echo 'DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-secret-key-change-in-production"
+CLIENT_URL="http://localhost:5173"' > .env
 
-# Install client dependencies
-cd ../client
-npm install
-```
-
-### 2. Configure Environment
-
-Create a `.env` file in the `server` directory:
-
-```bash
-# server/.env
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="your-super-secret-key-change-in-production"
-CLIENT_URL="http://localhost:5173"
-```
-
-### 3. Initialize Database
-
-```bash
-cd server
+# 3. Initialize database
 npx prisma generate
+npx prisma db push
+
+# 4. Start servers (in separate terminals)
+# Terminal 1:
+cd server && npm run dev
+
+# Terminal 2:
+cd client && npm run dev
+```
+
+App runs at **http://localhost:5173**
+
+---
+
+## 🌐 Deployment
+
+### Option 1: Railway (Recommended)
+
+Railway is the easiest option - one service for everything.
+
+#### Step 1: Push to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/resolution-tracker.git
+git push -u origin main
+```
+
+#### Step 2: Deploy on Railway
+1. Go to [railway.app](https://railway.app) and create account
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Select your repository
+4. Add environment variables:
+   ```
+   DATABASE_URL=file:./data/prod.db
+   JWT_SECRET=generate-a-secure-random-string-here
+   NODE_ENV=production
+   ```
+5. Set build command: `cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate && npx prisma db push`
+6. Set start command: `cd server && node dist/index.js`
+7. Deploy!
+
+> **Note:** For SQLite persistence on Railway, mount a volume at `/app/server/prisma` and set `DATABASE_URL=file:./prisma/prod.db`
+
+---
+
+### Option 2: Render
+
+#### Backend (Web Service)
+1. Create a new Web Service on [render.com](https://render.com)
+2. Connect your GitHub repo
+3. Configure:
+   - **Root Directory:** `server`
+   - **Build Command:** `npm install && npx prisma generate && npx prisma db push && npm run build`
+   - **Start Command:** `npm start`
+4. Add environment variables:
+   ```
+   DATABASE_URL=file:./prod.db
+   JWT_SECRET=your-secure-secret
+   NODE_ENV=production
+   CLIENT_URL=https://your-frontend-url.onrender.com
+   ```
+
+#### Frontend (Static Site)
+1. Create a Static Site
+2. Configure:
+   - **Root Directory:** `client`
+   - **Build Command:** `npm install && npm run build`
+   - **Publish Directory:** `dist`
+3. Add rewrite rule: `/*` → `/index.html` (for SPA routing)
+
+---
+
+### Option 3: Fly.io
+
+#### Step 1: Install Fly CLI
+```bash
+brew install flyctl  # macOS
+# or: curl -L https://fly.io/install.sh | sh
+```
+
+#### Step 2: Create fly.toml
+```toml
+app = "resolution-tracker"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+
+[[mounts]]
+  source = "data"
+  destination = "/app/server/prisma"
+```
+
+#### Step 3: Create Dockerfile
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install deps & build
+COPY . .
+RUN cd client && npm install && npm run build
+RUN cd server && npm install && npx prisma generate && npm run build
+
+# Runtime
+WORKDIR /app/server
+ENV NODE_ENV=production
+EXPOSE 3001
+CMD ["npm", "start"]
+```
+
+#### Step 4: Deploy
+```bash
+fly launch
+fly secrets set JWT_SECRET=your-secure-secret
+fly secrets set DATABASE_URL=file:./prisma/prod.db
+fly deploy
+```
+
+---
+
+### Option 4: Using PostgreSQL (Recommended for Production)
+
+For production, PostgreSQL is more reliable than SQLite.
+
+#### Step 1: Update Prisma Schema
+Edit `server/prisma/schema.prisma`:
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+#### Step 2: Get a PostgreSQL Database
+- **Railway:** Add PostgreSQL plugin, copy connection string
+- **Neon:** Free tier at [neon.tech](https://neon.tech)
+- **Supabase:** Free tier at [supabase.com](https://supabase.com)
+
+#### Step 3: Update Environment
+```bash
+DATABASE_URL="postgresql://user:password@host:5432/dbname"
+```
+
+#### Step 4: Migrate
+```bash
+cd server
 npx prisma db push
 ```
 
-### 4. Start Development Servers
+---
 
-**Terminal 1 - Backend:**
-```bash
-cd server
-npm run dev
-```
+## Environment Variables
 
-**Terminal 2 - Frontend:**
-```bash
-cd client
-npm run dev
-```
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | Database connection string | `file:./dev.db` or `postgresql://...` |
+| `JWT_SECRET` | Secret for signing JWTs (use a long random string) | `a8f7d3k2m9x...` |
+| `NODE_ENV` | Environment (`development` or `production`) | `production` |
+| `CLIENT_URL` | Frontend URL (for CORS, only needed if separate) | `https://app.example.com` |
+| `PORT` | Server port | `3001` |
 
-The app will be available at `http://localhost:5173`
-
-## Default Goals
-
-When you sign up, the following goals are created automatically:
-
-| Goal | Type | Target |
-|------|------|--------|
-| €10k additional income | Counter | €10,000 |
-| Chatbot users | Counter | 1,000 users |
-| Drumming hours | Counter | 50 hours |
-| Piano classes | Counter | 20 classes |
-| No added sugar on weekdays | Rule | 100% |
-| Find new job | Binary | - |
-| Arabic A1 | Binary | - |
-| Spanish B2 | Binary | - |
-| Splits | Binary | - |
-| Visit UK | Binary | - |
-| Language platform first users | Counter | 20 users |
+---
 
 ## API Endpoints
 
@@ -119,48 +236,7 @@ When you sign up, the following goals are created automatically:
 - `PATCH /api/checkins/:id` - Update check-in
 - `DELETE /api/checkins/:id` - Delete check-in
 
-## Deployment
-
-### Railway
-
-1. Create a new Railway project
-2. Add a PostgreSQL database (or use SQLite with persistent storage)
-3. Set environment variables:
-   - `DATABASE_URL` - Your database connection string
-   - `JWT_SECRET` - A secure random string
-   - `CLIENT_URL` - Your frontend URL
-4. Deploy the backend from the `server` directory
-5. Deploy the frontend from the `client` directory (or build and serve statically)
-
-### Render
-
-1. Create a Web Service for the backend
-2. Create a Static Site for the frontend
-3. Set up environment variables as above
-4. Use `npm run build && npm start` as the build command for backend
-
-### Vercel (Frontend) + Railway (Backend)
-
-1. Deploy frontend to Vercel pointing to `client` directory
-2. Deploy backend to Railway pointing to `server` directory
-3. Update `CLIENT_URL` and API proxy settings accordingly
-
-### Using PostgreSQL in Production
-
-Update the Prisma schema for PostgreSQL:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-Then run:
-```bash
-npx prisma generate
-npx prisma db push
-```
+---
 
 ## Project Structure
 
@@ -168,28 +244,20 @@ npx prisma db push
 resolution-tracker/
 ├── client/                 # React frontend
 │   ├── src/
-│   │   ├── api/           # API client functions
-│   │   ├── components/    # React components
+│   │   ├── api/           # API client
+│   │   ├── components/    # UI components
 │   │   ├── types/         # TypeScript types
-│   │   ├── App.tsx        # Main app component
-│   │   ├── main.tsx       # Entry point
 │   │   └── styles.css     # Global styles
-│   ├── index.html
-│   ├── package.json
 │   └── vite.config.ts
 │
 ├── server/                 # Express backend
 │   ├── prisma/
 │   │   └── schema.prisma  # Database schema
-│   ├── src/
-│   │   ├── lib/           # Shared utilities
-│   │   ├── middleware/    # Express middleware
-│   │   ├── routes/        # API routes
-│   │   └── index.ts       # Server entry point
-│   ├── package.json
-│   └── tsconfig.json
+│   └── src/
+│       ├── routes/        # API routes
+│       └── middleware/    # Auth middleware
 │
-├── .gitignore
+├── package.json           # Root package.json
 └── README.md
 ```
 

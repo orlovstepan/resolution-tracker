@@ -75,7 +75,7 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
 
 interface GoalFormProps {
   goal?: Goal;
-  onSubmit: (data: CreateGoalInput | UpdateGoalInput) => void;
+  onSubmit: (data: CreateGoalInput) => void;
   onCancel: () => void;
 }
 
@@ -229,7 +229,11 @@ function GoalItem({ goal, isEditing, onEdit, onCancelEdit, onUpdate, onDelete }:
   if (isEditing) {
     return (
       <div className={styles.item}>
-        <GoalForm goal={goal} onSubmit={onUpdate} onCancel={onCancelEdit} />
+        <GoalForm 
+          goal={goal} 
+          onSubmit={(data) => onUpdate(data)} 
+          onCancel={onCancelEdit} 
+        />
       </div>
     );
   }
