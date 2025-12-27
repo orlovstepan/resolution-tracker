@@ -8,7 +8,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "cd client && npm install && npm run build",
     "build:server": "cd server && npm install && DATABASE_URL=postgresql://dummy npx prisma generate && npm run build",
-    "start": "cd server && npx prisma db push && node dist/index.js",
+    "start": "cd server && bash scripts/start.sh",
     "postinstall": "echo 'Run npm run build to build the project'"
   },
   "engines": {
