@@ -5,6 +5,20 @@ export interface User {
 
 export type GoalType = 'counter' | 'binary' | 'rule';
 export type GoalStatus = 'not_started' | 'in_progress' | 'done';
+export type RuleType = 'avoid' | 'achieve';
+export type RulePeriod = 'day' | 'week' | 'month';
+
+export interface RuleLogEntry {
+  date: string; // YYYY-MM-DD
+  success: boolean;
+  note?: string;
+}
+
+export interface Milestone {
+  id: string;
+  text: string;
+  done: boolean;
+}
 
 export interface Goal {
   id: string;
@@ -15,8 +29,14 @@ export interface Goal {
   target?: number | null;
   value: number;
   status: GoalStatus;
-  nextMilestone?: string | null;
+  nextMilestone?: string | null; // Deprecated, kept for compatibility
+  milestones?: Milestone[] | string;
   notes?: string | null;
+  // Rule-specific fields
+  ruleType?: RuleType | null;
+  ruleTarget?: number | null;
+  rulePeriod?: RulePeriod | null;
+  ruleLogs?: RuleLogEntry[] | string;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,7 +63,11 @@ export interface CreateGoalInput {
   unit?: string;
   target?: number;
   nextMilestone?: string;
+  milestones?: Milestone[];
   notes?: string;
+  ruleType?: RuleType;
+  ruleTarget?: number;
+  rulePeriod?: RulePeriod;
 }
 
 export interface UpdateGoalInput {
@@ -54,7 +78,12 @@ export interface UpdateGoalInput {
   value?: number;
   status?: GoalStatus;
   nextMilestone?: string | null;
+  milestones?: Milestone[];
   notes?: string | null;
+  ruleType?: RuleType | null;
+  ruleTarget?: number | null;
+  rulePeriod?: RulePeriod | null;
+  ruleLogs?: RuleLogEntry[];
 }
 
 export interface UpdateCheckinInput {
@@ -62,4 +91,5 @@ export interface UpdateCheckinInput {
   blocker?: string;
   notes?: string;
 }
+
 

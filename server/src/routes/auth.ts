@@ -11,18 +11,29 @@ const authSchema = z.object({
   password: z.string().min(6),
 });
 
+// Sample goals to demonstrate each goal type
 const DEFAULT_GOALS = [
-  { title: '€10k additional income', type: 'counter', target: 10000, unit: '€' },
-  { title: 'Chatbot users', type: 'counter', target: 1000, unit: 'users' },
-  { title: 'Drumming hours', type: 'counter', target: 50, unit: 'hours' },
-  { title: 'Piano classes', type: 'counter', target: 20, unit: 'classes' },
-  { title: 'No added sugar on weekdays', type: 'rule', value: 100 },
-  { title: 'Find new job', type: 'binary' },
-  { title: 'Arabic A1', type: 'binary' },
-  { title: 'Spanish B2', type: 'binary' },
-  { title: 'Splits', type: 'binary' },
-  { title: 'Visit UK', type: 'binary' },
-  { title: 'Language platform first users', type: 'counter', target: 20, unit: 'users' },
+  { 
+    title: 'Read 12 books', 
+    type: 'counter', 
+    target: 12, 
+    unit: 'books',
+    sortOrder: 0,
+  },
+  { 
+    title: 'Learn to play guitar', 
+    type: 'binary',
+    sortOrder: 1,
+  },
+  { 
+    title: 'Exercise 3x per week', 
+    type: 'rule', 
+    value: 0, 
+    ruleType: 'achieve', 
+    ruleTarget: 3,
+    rulePeriod: 'week',
+    sortOrder: 2,
+  },
 ];
 
 router.post('/signup', async (req: AuthRequest, res: Response) => {
@@ -40,7 +51,7 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
       data: { email, passwordHash },
     });
 
-    // Create default goals for new user
+    // Create sample goals for new user (one of each type)
     await prisma.goal.createMany({
       data: DEFAULT_GOALS.map((goal) => ({
         userId: user.id,
@@ -50,6 +61,10 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
         unit: goal.unit,
         value: goal.value || 0,
         status: 'not_started',
+        sortOrder: goal.sortOrder,
+        ruleType: goal.ruleType,
+        ruleTarget: goal.ruleTarget,
+        rulePeriod: goal.rulePeriod,
       })),
     });
 
@@ -132,4 +147,5 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 export default router;
+
 

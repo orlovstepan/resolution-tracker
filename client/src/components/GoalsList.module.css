@@ -56,10 +56,76 @@
   padding-top: 8px;
 }
 
+/* Form milestones */
+.formMilestonesList {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formMilestoneItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.formMilestoneRemove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.formMilestoneRemove:hover {
+  color: var(--accent-danger);
+}
+
+.formMilestoneAdd {
+  display: flex;
+  gap: 6px;
+}
+
+.formMilestoneAdd input {
+  flex: 1;
+}
+
+.formMilestoneAddBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formMilestoneAddBtn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.formMilestoneAddBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .item {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
 }
 
 .item:hover {
@@ -68,6 +134,37 @@
 
 .item:last-child {
   border-bottom: none;
+}
+
+.item:active {
+  cursor: grabbing;
+}
+
+.itemDragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.itemDragOver {
+  background: rgba(255, 107, 53, 0.1);
+  border-top: 2px solid var(--accent-primary);
+}
+
+.dragHandle {
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 16px;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+
+.item:hover .dragHandle {
+  opacity: 0.8;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
 }
 
 .itemHeader {
@@ -177,6 +274,441 @@
   font-style: italic;
 }
 
+/* Stepper for counter goals */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.stepperBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.stepperBtn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: scale(1.05);
+}
+
+.stepperBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.stepperBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepperValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
+.stepperNumber {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stepperInput {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  text-align: center;
+  width: auto;
+  min-width: 60px;
+  max-width: 150px;
+  padding: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.stepperInput:focus {
+  outline: none;
+  border-bottom-color: var(--accent-primary);
+}
+
+.stepperInput::-webkit-inner-spin-button,
+.stepperInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepperInput[type=number] {
+  -moz-appearance: textfield;
+}
+
+.stepperTarget {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.overachieveMessage {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-success);
+  padding: 8px 16px;
+  background: rgba(74, 222, 128, 0.1);
+  border-radius: var(--radius-md);
+  animation: celebratePulse 2s ease-in-out infinite;
+}
+
+@keyframes celebratePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Binary goal button */
+.binarySection {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.binaryBtn {
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.binaryBtn:hover {
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+}
+
+.binaryDone {
+  background: rgba(74, 222, 128, 0.15);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+}
+
+.binaryDone:hover {
+  background: rgba(74, 222, 128, 0.25);
+}
+
+/* Rule Tracker */
+.ruleTracker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.ruleInfo {
+  text-align: center;
+}
+
+.ruleDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.weekGrid {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.dayCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.dayName {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.dayBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.dayBtn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.dayToday {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+.dayFuture {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.daySuccess {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+}
+
+.dayFail {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.monthDay {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.monthDay:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  background: var(--bg-hover);
+}
+
+.ruleStats {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Milestones to-do list */
+.milestonesSection {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.milestonesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.milestonesLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.milestonesCount {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.milestonesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.milestoneItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.milestoneItem:hover {
+  background: var(--bg-hover);
+}
+
+.milestoneCheckbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.milestoneCheckbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: transparent;
+  transition: all 0.2s ease;
+  background: var(--bg-card);
+}
+
+.milestoneCheckbox input:checked ~ .checkmark {
+  background: var(--accent-success);
+  border-color: var(--accent-success);
+  color: white;
+}
+
+.milestoneCheckbox:hover .checkmark {
+  border-color: var(--accent-primary);
+}
+
+.milestoneText {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.milestoneDone .milestoneText {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.milestoneDelete {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.milestoneItem:hover .milestoneDelete {
+  opacity: 1;
+}
+
+.milestoneDelete:hover {
+  color: var(--accent-danger);
+}
+
+.addMilestone {
+  display: flex;
+  gap: 6px;
+}
+
+.addMilestoneInput {
+  flex: 1;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.addMilestoneInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.addMilestoneBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.addMilestoneBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.addMilestoneBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
   .formRow {
     flex-direction: column;
@@ -185,5 +717,22 @@
   .itemActions {
     opacity: 1;
   }
+  
+  .dayBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+  
+  .stepperBtn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .stepperNumber {
+    font-size: 28px;
+  }
 }
+
 

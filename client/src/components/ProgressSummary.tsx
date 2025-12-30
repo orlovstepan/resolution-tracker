@@ -1,8 +1,21 @@
-import type { Goal } from '../types';
+import type { Goal, Milestone } from '../types';
 import styles from './ProgressSummary.module.css';
 
 interface ProgressSummaryProps {
   goals: Goal[];
+}
+
+// Helper to parse milestones
+function parseMilestones(milestones: Milestone[] | string | undefined): Milestone[] {
+  if (!milestones) return [];
+  if (typeof milestones === 'string') {
+    try {
+      return JSON.parse(milestones);
+    } catch {
+      return [];
+    }
+  }
+  return milestones;
 }
 
 export function ProgressSummary({ goals }: ProgressSummaryProps) {
@@ -10,17 +23,44 @@ export function ProgressSummary({ goals }: ProgressSummaryProps) {
   const doneGoals = goals.filter(g => g.status === 'done').length;
   const inProgressGoals = goals.filter(g => g.status === 'in_progress').length;
   
-  // Calculate average counter progress
-  const counterGoals = goals.filter(g => g.type === 'counter' && g.target);
-  const avgCounterProgress = counterGoals.length > 0
-    ? counterGoals.reduce((sum, g) => sum + Math.min(g.value / (g.target || 1), 1), 0) / counterGoals.length
+  // Calculate weighted overall progress
+  const overallProgress = totalGoals > 0 
+    ? goals.reduce((sum, g) => {
+        if (g.type === 'counter' && g.target) {
+          return sum + Math.min(g.value / g.target, 1);
+        } else if (g.type === 'binary') {
+          return sum + (g.status === 'done' ? 1 : 0);
+        } else if (g.type === 'rule') {
+          return sum + (g.value / 100); // Rules are 0-100%
+        }
+        return sum;
+      }, 0) / totalGoals * 100
     : 0;
 
-  // Calculate binary goals done
-  const binaryGoals = goals.filter(g => g.type === 'binary');
-  const binaryDone = binaryGoals.filter(g => g.status === 'done').length;
+  // Find the goal closest to completion (but not done)
+  const closestGoal = goals
+    .filter(g => g.status !== 'done')
+    .map(g => {
+      let progress = 0;
+      if (g.type === 'counter' && g.target) {
+        progress = Math.min(g.value / g.target, 1);
+      } else if (g.type === 'rule') {
+        progress = g.value / 100;
+      }
+      return { goal: g, progress };
+    })
+    .sort((a, b) => b.progress - a.progress)[0];
 
-  const overallProgress = totalGoals > 0 ? (doneGoals / totalGoals) * 100 : 0;
+  // Count milestones completed
+  const allMilestones = goals.flatMap(g => parseMilestones(g.milestones));
+  const completedMilestones = allMilestones.filter(m => m.done).length;
+  const totalMilestones = allMilestones.length;
+
+  // Calculate rule compliance (for rule goals)
+  const ruleGoals = goals.filter(g => g.type === 'rule');
+  const avgRuleCompliance = ruleGoals.length > 0
+    ? ruleGoals.reduce((sum, g) => sum + g.value, 0) / ruleGoals.length
+    : null;
 
   return (
     <div className={styles.container}>
@@ -71,28 +111,38 @@ export function ProgressSummary({ goals }: ProgressSummaryProps) {
       <div className={styles.stats}>
         <div className={styles.stat}>
           <div className={styles.statValue}>
-            <span className="font-mono">{Math.round(avgCounterProgress * 100)}</span>
+            <span className="font-mono">{Math.round(overallProgress)}</span>
             <span className={styles.statUnit}>%</span>
           </div>
-          <div className={styles.statLabel}>Avg Counter Progress</div>
+          <div className={styles.statLabel}>Overall Progress</div>
         </div>
         
-        <div className={styles.stat}>
-          <div className={styles.statValue}>
-            <span className="font-mono">{binaryDone}</span>
-            <span className={styles.statUnit}>/ {binaryGoals.length}</span>
+        {totalMilestones > 0 && (
+          <div className={styles.stat}>
+            <div className={styles.statValue}>
+              <span className="font-mono">{completedMilestones}</span>
+              <span className={styles.statUnit}>/ {totalMilestones}</span>
+            </div>
+            <div className={styles.statLabel}>Milestones Done</div>
           </div>
-          <div className={styles.statLabel}>Binary Goals Done</div>
-        </div>
+        )}
         
-        <div className={styles.stat}>
-          <div className={styles.statValue}>
-            <span className="font-mono">{counterGoals.length}</span>
+        {closestGoal && closestGoal.progress > 0 && (
+          <div className={`${styles.stat} ${styles.statHighlight}`}>
+            <div className={styles.statValue}>
+              <span className="font-mono">{Math.round(closestGoal.progress * 100)}</span>
+              <span className={styles.statUnit}>%</span>
+            </div>
+            <div className={styles.statLabel} title={closestGoal.goal.title}>
+              🔥 {closestGoal.goal.title.length > 15 
+                ? closestGoal.goal.title.slice(0, 15) + '...' 
+                : closestGoal.goal.title}
+            </div>
           </div>
-          <div className={styles.statLabel}>Counter Goals</div>
-        </div>
+        )}
       </div>
     </div>
   );
 }
+
 

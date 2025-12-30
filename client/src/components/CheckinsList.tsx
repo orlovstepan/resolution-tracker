@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { MonthlyCheckin, Goal, UpdateCheckinInput } from '../types';
 import { checkinsApi } from '../api';
+import { ConfirmDialog } from './ConfirmDialog';
 import styles from './CheckinsList.module.css';
 
 interface CheckinsListProps {
@@ -18,17 +19,18 @@ export function CheckinsList({
   onMonthChange, 
   onUpdate 
 }: CheckinsListProps) {
-  const [creating, setCreating] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; date: string } | null>(null);
 
-  const handleCreate = async () => {
-    setCreating(true);
-    try {
-      await checkinsApi.create(selectedMonth);
-      onUpdate();
-    } finally {
-      setCreating(false);
+  const handleCreate = async (data: UpdateCheckinInput) => {
+    const checkin = await checkinsApi.create(selectedMonth);
+    // Update with the details
+    if (data.highlight || data.blocker || data.notes) {
+      await checkinsApi.update(checkin.id, data);
     }
+    setShowCreateForm(false);
+    onUpdate();
   };
 
   const handleUpdate = async (id: string, data: UpdateCheckinInput) => {
@@ -37,12 +39,21 @@ export function CheckinsList({
     onUpdate();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Delete this check-in?')) {
-      await checkinsApi.delete(id);
+  const handleDeleteRequest = (id: string, date: string) => {
+    setDeleteConfirm({ id, date });
+  };
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (deleteConfirm) {
+      await checkinsApi.delete(deleteConfirm.id);
+      setDeleteConfirm(null);
       onUpdate();
     }
-  };
+  }, [deleteConfirm, onUpdate]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteConfirm(null);
+  }, []);
 
   // Generate month options (current year and previous year)
   const monthOptions = generateMonthOptions();
@@ -68,14 +79,21 @@ export function CheckinsList({
             ))}
           </select>
           <button 
-            onClick={handleCreate} 
+            onClick={() => setShowCreateForm(!showCreateForm)} 
             className="btn-primary btn-small"
-            disabled={creating}
           >
-            {creating ? '...' : '+ Check-in'}
+            {showCreateForm ? 'Cancel' : '+ Check-in'}
           </button>
         </div>
       </div>
+
+      {showCreateForm && (
+        <CheckinForm
+          month={formatMonth(selectedMonth)}
+          onSubmit={handleCreate}
+          onCancel={() => setShowCreateForm(false)}
+        />
+      )}
 
       <div className={styles.list}>
         {checkins.map((checkin) => (
@@ -87,17 +105,28 @@ export function CheckinsList({
             onEdit={() => setEditingId(checkin.id)}
             onCancelEdit={() => setEditingId(null)}
             onUpdate={(data) => handleUpdate(checkin.id, data)}
-            onDelete={() => handleDelete(checkin.id)}
+            onDelete={() => handleDeleteRequest(checkin.id, new Date(checkin.createdAt).toLocaleDateString())}
           />
         ))}
 
-        {checkins.length === 0 && (
+        {checkins.length === 0 && !showCreateForm && (
           <div className={styles.empty}>
             <p>No check-ins for {formatMonth(selectedMonth)} yet.</p>
             <p className={styles.emptyHint}>Create one to snapshot your current progress!</p>
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteConfirm !== null}
+        title="Delete Check-in"
+        message={`Are you sure you want to delete this check-in from ${deleteConfirm?.date}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }
@@ -115,6 +144,77 @@ function generateMonthOptions(): { value: string; label: string }[] {
   }
   
   return options.reverse();
+}
+
+interface CheckinFormProps {
+  month: string;
+  onSubmit: (data: UpdateCheckinInput) => void;
+  onCancel: () => void;
+}
+
+function CheckinForm({ month, onSubmit, onCancel }: CheckinFormProps) {
+  const [highlight, setHighlight] = useState('');
+  const [blocker, setBlocker] = useState('');
+  const [notes, setNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await onSubmit({ highlight, blocker, notes });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.createForm}>
+      <div className={styles.createFormHeader}>
+        <span className={styles.createFormTitle}>📸 New Check-in for {month}</span>
+        <span className={styles.createFormHint}>Snapshots your current goal progress</span>
+      </div>
+
+      <div className={styles.field}>
+        <label className="label">✨ Highlight</label>
+        <textarea
+          value={highlight}
+          onChange={(e) => setHighlight(e.target.value)}
+          placeholder="What went well this month?"
+          rows={2}
+        />
+      </div>
+
+      <div className={styles.field}>
+        <label className="label">🚧 Blocker</label>
+        <textarea
+          value={blocker}
+          onChange={(e) => setBlocker(e.target.value)}
+          placeholder="What held you back?"
+          rows={2}
+        />
+      </div>
+
+      <div className={styles.field}>
+        <label className="label">📝 Notes</label>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Any additional thoughts..."
+          rows={2}
+        />
+      </div>
+
+      <div className={styles.createFormActions}>
+        <button type="button" onClick={onCancel} className="btn-secondary btn-small">
+          Cancel
+        </button>
+        <button type="submit" className="btn-primary btn-small" disabled={saving}>
+          {saving ? 'Creating...' : 'Create Check-in'}
+        </button>
+      </div>
+    </form>
+  );
 }
 
 interface CheckinItemProps {
@@ -296,4 +396,5 @@ function CheckinItem({
     </div>
   );
 }
+
 

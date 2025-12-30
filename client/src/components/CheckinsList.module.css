@@ -98,6 +98,40 @@
   font-style: italic;
 }
 
+/* Create form */
+.createForm {
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.createFormHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.createFormTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.createFormHint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.createFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+}
+
 .editForm {
   display: flex;
   flex-direction: column;
@@ -158,4 +192,5 @@
     justify-content: space-between;
   }
 }
+
 

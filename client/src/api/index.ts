@@ -83,6 +83,26 @@ export const goalsApi = {
     });
     await handleResponse(res);
   },
+
+  async reorder(goalId: string, direction: 'up' | 'down'): Promise<void> {
+    const res = await fetch(`${API_BASE}/goals/reorder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ goalId, direction }),
+    });
+    await handleResponse(res);
+  },
+
+  async reorderBulk(goalIds: string[]): Promise<void> {
+    const res = await fetch(`${API_BASE}/goals/reorder-bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ goalIds }),
+    });
+    await handleResponse(res);
+  },
 };
 
 // Checkins API
@@ -123,4 +143,5 @@ export const checkinsApi = {
     await handleResponse(res);
   },
 };
+
 

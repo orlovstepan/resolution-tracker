@@ -26,8 +26,15 @@ model Goal {
   target        Float?
   value         Float     @default(0)
   status        String    @default("not_started") // 'not_started' | 'in_progress' | 'done'
-  nextMilestone String?
+  nextMilestone String?   // Deprecated, kept for compatibility
+  milestones    String    @default("[]") // JSON array of milestones [{id, text, done}]
   notes         String?
+  sortOrder     Int       @default(0) // For manual ordering
+  // Rule-specific fields
+  ruleType      String?   // 'avoid' (no sugar) | 'achieve' (sports 3x/week)
+  ruleTarget    Int?      // how many times per period (null for 'avoid' = every day)
+  rulePeriod    String?   // 'day' | 'week' | 'month'
+  ruleLogs      String    @default("[]") // JSON array of log entries [{date, success, note?}]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
