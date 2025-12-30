@@ -87,15 +87,17 @@ router.post('/', async (req: AuthRequest, res: Response) => {
     });
     const nextOrder = (maxOrderGoal?.sortOrder ?? -1) + 1;
     
-    // Convert milestones array to JSON string for storage
-    const createData: Record<string, unknown> = { ...data };
-    if (data.milestones) {
-      createData.milestones = JSON.stringify(data.milestones);
-    }
-    
     const goal = await prisma.goal.create({
       data: {
-        ...createData,
+        title: data.title,
+        type: data.type,
+        unit: data.unit,
+        target: data.target,
+        notes: data.notes,
+        ruleType: data.ruleType,
+        ruleTarget: data.ruleTarget,
+        rulePeriod: data.rulePeriod,
+        milestones: data.milestones ? JSON.stringify(data.milestones) : undefined,
         userId: req.userId!,
         value: 0,
         status: 'not_started',
