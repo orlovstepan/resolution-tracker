@@ -533,6 +533,119 @@
   background: var(--bg-hover);
 }
 
+/* Daily habit tracker */
+.dailyTracker {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.dailyButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.dailyBtn {
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dailyBtn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  background: var(--bg-hover);
+}
+
+.dailyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dailyBtn.dailyActive {
+  border-color: var(--accent-success);
+  background: rgba(var(--accent-success-rgb), 0.15);
+  color: var(--accent-success);
+}
+
+.dailyBtn.dailySuccess {
+  border-color: var(--accent-success);
+  background: var(--accent-success);
+  color: white;
+}
+
+.dailyBtn.dailyFail {
+  border-color: var(--accent-danger);
+  background: var(--accent-danger);
+  color: white;
+}
+
+/* Daily counter for multiple times per day */
+.dailyCounter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dailyCountLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.dailyCountControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dailyCountBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dailyCountBtn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  background: var(--bg-hover);
+}
+
+.dailyCountBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dailyCountValue {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 60px;
+  text-align: center;
+}
+
+.dailyCountValue.dailyCountDone {
+  color: var(--accent-success);
+}
+
 .ruleStats {
   text-align: center;
   font-size: 13px;

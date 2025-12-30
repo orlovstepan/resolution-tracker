@@ -416,6 +416,13 @@ function parseRuleLogs(logs: RuleLogEntry[] | string | undefined): RuleLogEntry[
   return logs;
 }
 
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getWeekDates(): string[] {
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -426,7 +433,7 @@ function getWeekDates(): string[] {
   for (let i = 0; i < 7; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
-    dates.push(date.toISOString().split('T')[0]);
+    dates.push(formatDateLocal(date));
   }
   return dates;
 }
@@ -440,7 +447,7 @@ function getMonthDates(): string[] {
   const dates: string[] = [];
   for (let i = 1; i <= daysInMonth; i++) {
     const date = new Date(year, month, i);
-    dates.push(date.toISOString().split('T')[0]);
+    dates.push(formatDateLocal(date));
   }
   return dates;
 }
@@ -536,31 +543,58 @@ function GoalItem({
   };
 
   const handleRuleLog = async (date: string, success: boolean) => {
-    const existingIndex = ruleLogs.findIndex(l => l.date === date);
     let newLogs: RuleLogEntry[];
+    const period = goal.rulePeriod || 'week';
+    const target = goal.ruleTarget || 1;
     
-    if (existingIndex >= 0) {
-      // Toggle: if same value, remove; if different, update
-      if (ruleLogs[existingIndex].success === success) {
-        newLogs = ruleLogs.filter((_, i) => i !== existingIndex);
+    // For daily achieve goals with target > 1, allow multiple success logs per day
+    if (period === 'day' && goal.ruleType === 'achieve' && target > 1) {
+      if (success) {
+        // Add a new success log
+        newLogs = [...ruleLogs, { date, success: true }];
       } else {
-        newLogs = [...ruleLogs];
-        newLogs[existingIndex] = { date, success };
+        // Remove one success log for this date
+        const successLogs = ruleLogs.filter(l => l.date === date && l.success);
+        if (successLogs.length > 0) {
+          // Remove the last success log for this date
+          const lastIndex = ruleLogs.map((l, i) => ({ l, i }))
+            .filter(({ l }) => l.date === date && l.success)
+            .pop()?.i;
+          if (lastIndex !== undefined) {
+            newLogs = ruleLogs.filter((_, i) => i !== lastIndex);
+          } else {
+            newLogs = ruleLogs;
+          }
+        } else {
+          newLogs = ruleLogs;
+        }
       }
     } else {
-      newLogs = [...ruleLogs, { date, success }];
+      // Original toggle logic for weekly/monthly or single-target goals
+      const existingIndex = ruleLogs.findIndex(l => l.date === date);
+      
+      if (existingIndex >= 0) {
+        // Toggle: if same value, remove; if different, update
+        if (ruleLogs[existingIndex].success === success) {
+          newLogs = ruleLogs.filter((_, i) => i !== existingIndex);
+        } else {
+          newLogs = [...ruleLogs];
+          newLogs[existingIndex] = { date, success };
+        }
+      } else {
+        newLogs = [...ruleLogs, { date, success }];
+      }
     }
     
     // Calculate compliance percentage
-    const period = goal.rulePeriod || 'week';
-    const periodDates = period === 'week' ? getWeekDates() : period === 'month' ? getMonthDates() : [new Date().toISOString().split('T')[0]];
+    const periodDates = period === 'week' ? getWeekDates() : period === 'month' ? getMonthDates() : [formatDateLocal(new Date())];
     const periodLogs = newLogs.filter(l => periodDates.includes(l.date));
     
     let newValue = 0;
     if (goal.ruleType === 'avoid') {
       // For "avoid" rules: % of days without failure
       const failDays = periodLogs.filter(l => !l.success).length;
-      const totalDays = periodDates.filter(d => d <= new Date().toISOString().split('T')[0]).length;
+      const totalDays = periodDates.filter(d => d <= formatDateLocal(new Date())).length;
       newValue = totalDays > 0 ? Math.round(((totalDays - failDays) / totalDays) * 100) : 100;
     } else {
       // For "achieve" rules: % of target achieved
@@ -846,10 +880,10 @@ function RuleTracker({ goal, ruleLogs, onLogToggle }: RuleTrackerProps) {
   const periodDates = useMemo(() => {
     if (period === 'week') return getWeekDates();
     if (period === 'month') return getMonthDates();
-    return [new Date().toISOString().split('T')[0]];
+    return [formatDateLocal(new Date())];
   }, [period]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatDateLocal(new Date());
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   const getLogForDate = (date: string) => ruleLogs.find(l => l.date === date);
@@ -864,11 +898,11 @@ function RuleTracker({ goal, ruleLogs, onLogToggle }: RuleTrackerProps) {
       <div className={styles.ruleInfo}>
         {ruleType === 'avoid' ? (
           <span className={styles.ruleDescription}>
-            🚫 Avoid • Track failures
+            🚫 Avoid {period === 'day' ? '• Daily' : `• ${period === 'week' ? 'Weekly' : 'Monthly'}`}
           </span>
         ) : (
           <span className={styles.ruleDescription}>
-            ✅ Do {goal.ruleTarget}x per {period} • {successCount}/{goal.ruleTarget} done
+            ✅ {period === 'day' ? 'Do daily' : `Do ${goal.ruleTarget}x per ${period}`} • {successCount}/{goal.ruleTarget || 1} done
           </span>
         )}
       </div>
@@ -945,6 +979,98 @@ function RuleTracker({ goal, ruleLogs, onLogToggle }: RuleTrackerProps) {
               </button>
             );
           })}
+        </div>
+      )}
+
+      {period === 'day' && (
+        <div className={styles.dailyTracker}>
+          {(() => {
+            const log = getLogForDate(today);
+            const hasSlipped = log !== undefined && !log.success;
+            const todaySuccessCount = ruleLogs.filter(l => l.date === today && l.success).length;
+            const target = goal.ruleTarget || 1;
+            
+            return (
+              <div className={styles.dailyButtons}>
+                {ruleType === 'avoid' ? (
+                  // Avoid type: toggle between "on track" and "slipped"
+                  <>
+                    <button
+                      className={`${styles.dailyBtn} ${!hasSlipped ? styles.dailySuccess : ''}`}
+                      onClick={() => {
+                        if (hasSlipped) {
+                          // Remove the failure log to go back to "on track"
+                          onLogToggle(today, false);
+                        }
+                      }}
+                      disabled={!hasSlipped}
+                    >
+                      ✓ On Track
+                    </button>
+                    <button
+                      className={`${styles.dailyBtn} ${hasSlipped ? styles.dailyFail : ''}`}
+                      onClick={() => {
+                        if (!hasSlipped) {
+                          onLogToggle(today, false);
+                        }
+                      }}
+                      disabled={hasSlipped}
+                    >
+                      ✗ Slipped
+                    </button>
+                  </>
+                ) : target > 1 ? (
+                  // Achieve type with multiple times per day: show counter
+                  <div className={styles.dailyCounter}>
+                    <span className={styles.dailyCountLabel}>Done today:</span>
+                    <div className={styles.dailyCountControls}>
+                      <button
+                        className={styles.dailyCountBtn}
+                        onClick={() => {
+                          // Remove one success log for today (pass false to trigger removal)
+                          onLogToggle(today, false);
+                        }}
+                        disabled={todaySuccessCount === 0}
+                      >
+                        −
+                      </button>
+                      <span className={`${styles.dailyCountValue} ${todaySuccessCount >= target ? styles.dailyCountDone : ''}`}>
+                        {todaySuccessCount} / {target}
+                      </span>
+                      <button
+                        className={styles.dailyCountBtn}
+                        onClick={() => onLogToggle(today, true)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // Achieve type with 1 per day: simple toggle
+                  <>
+                    <button
+                      className={`${styles.dailyBtn} ${todaySuccessCount > 0 ? styles.dailySuccess : ''}`}
+                      onClick={() => onLogToggle(today, true)}
+                      disabled={todaySuccessCount > 0}
+                    >
+                      ✓ Done Today
+                    </button>
+                    <button
+                      className={`${styles.dailyBtn} ${todaySuccessCount === 0 ? styles.dailyActive : ''}`}
+                      onClick={() => {
+                        if (todaySuccessCount > 0) {
+                          onLogToggle(today, true); // Toggle off
+                        }
+                      }}
+                      disabled={todaySuccessCount === 0}
+                    >
+                      ✗ Not Done
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 
