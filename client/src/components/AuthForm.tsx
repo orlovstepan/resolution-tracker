@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { User } from '../types';
 import { authApi } from '../api';
-import styles from './AuthForm.module.css';
+import styles from './AuthForm.module.scss';
 
 interface AuthFormProps {
   onSuccess: (user: User) => void;

@@ -79,10 +79,10 @@
   text-align: center;
   padding: 0 20px;
   border-left: 1px solid var(--border-color);
-}
 
-.stat:first-child {
-  border-left: none;
+  &:first-child {
+    border-left: none;
+  }
 }
 
 .statValue {
@@ -118,11 +118,11 @@
   padding: 12px 20px;
   margin: -12px 0;
   border-left: none !important;
-}
 
-.statHighlight .statLabel {
-  color: var(--accent-primary);
-  text-transform: none;
+  .statLabel {
+    color: var(--accent-primary);
+    text-transform: none;
+  }
 }
 
 @media (max-width: 800px) {
@@ -155,5 +155,4 @@
     min-width: 80px;
   }
 }
-
 

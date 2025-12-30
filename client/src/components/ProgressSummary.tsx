@@ -1,5 +1,5 @@
 import type { Goal, Milestone } from '../types';
-import styles from './ProgressSummary.module.css';
+import styles from './ProgressSummary.module.scss';
 
 interface ProgressSummaryProps {
   goals: Goal[];

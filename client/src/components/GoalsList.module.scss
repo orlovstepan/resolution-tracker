@@ -29,6 +29,7 @@
   color: var(--text-secondary);
 }
 
+// Form styles
 .form {
   padding: 20px;
   background: var(--bg-secondary);
@@ -56,7 +57,7 @@
   padding-top: 8px;
 }
 
-/* Form milestones */
+// Form milestones
 .formMilestonesList {
   list-style: none;
   margin: 0 0 8px 0;
@@ -84,19 +85,19 @@
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
-}
 
-.formMilestoneRemove:hover {
-  color: var(--accent-danger);
+  &:hover {
+    color: var(--accent-danger);
+  }
 }
 
 .formMilestoneAdd {
   display: flex;
   gap: 6px;
-}
 
-.formMilestoneAdd input {
-  flex: 1;
+  input {
+    flex: 1;
+  }
 }
 
 .formMilestoneAddBtn {
@@ -109,35 +110,44 @@
   font-size: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
 }
 
-.formMilestoneAddBtn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.formMilestoneAddBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
+// Goal item
 .item {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   cursor: grab;
-}
 
-.item:hover {
-  background: var(--bg-hover);
-}
+  &:hover {
+    background: var(--bg-hover);
 
-.item:last-child {
-  border-bottom: none;
-}
+    .itemActions {
+      opacity: 1;
+    }
 
-.item:active {
-  cursor: grabbing;
+    .dragHandle {
+      opacity: 0.8;
+    }
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .itemDragging {
@@ -157,14 +167,10 @@
   opacity: 0.4;
   transition: opacity 0.2s ease;
   user-select: none;
-}
 
-.item:hover .dragHandle {
-  opacity: 0.8;
-}
-
-.dragHandle:active {
-  cursor: grabbing;
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .itemHeader {
@@ -194,16 +200,13 @@
   transition: opacity 0.2s ease;
 }
 
-.item:hover .itemActions {
-  opacity: 1;
-}
-
 .itemContent {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+// Counter section
 .counterSection {
   display: flex;
   flex-direction: column;
@@ -230,6 +233,7 @@
   color: var(--text-secondary);
 }
 
+// Rule section
 .ruleSection {
   display: flex;
   align-items: center;
@@ -241,6 +245,7 @@
   color: var(--text-secondary);
 }
 
+// Status row
 .statusRow {
   display: flex;
   align-items: center;
@@ -255,6 +260,7 @@
   padding: 6px 32px 6px 12px;
 }
 
+// Milestone
 .milestone {
   font-size: 13px;
   color: var(--text-secondary);
@@ -274,7 +280,7 @@
   font-style: italic;
 }
 
-/* Stepper for counter goals */
+// Stepper for counter goals
 .stepper {
   display: flex;
   align-items: center;
@@ -299,21 +305,21 @@
   justify-content: center;
   padding: 0;
   line-height: 1;
-}
 
-.stepperBtn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background: var(--bg-tertiary);
-  transform: scale(1.05);
-}
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+    transform: scale(1.05);
+  }
 
-.stepperBtn:active:not(:disabled) {
-  transform: scale(0.95);
-}
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
 
-.stepperBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
 }
 
 .stepperValue {
@@ -345,21 +351,22 @@
   max-width: 150px;
   padding: 4px;
   transition: border-color 0.2s ease;
-}
 
-.stepperInput:focus {
-  outline: none;
-  border-bottom-color: var(--accent-primary);
-}
+  &:focus {
+    outline: none;
+    border-bottom-color: var(--accent-primary);
+  }
 
-.stepperInput::-webkit-inner-spin-button,
-.stepperInput::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  // Hide spinners
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-.stepperInput[type=number] {
-  -moz-appearance: textfield;
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
 }
 
 .stepperTarget {
@@ -380,15 +387,11 @@
 }
 
 @keyframes celebratePulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
-/* Binary goal button */
+// Binary goal button
 .binarySection {
   display: flex;
   justify-content: center;
@@ -405,24 +408,24 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-}
 
-.binaryBtn:hover {
-  border-color: var(--accent-success);
-  color: var(--accent-success);
+  &:hover {
+    border-color: var(--accent-success);
+    color: var(--accent-success);
+  }
 }
 
 .binaryDone {
   background: rgba(74, 222, 128, 0.15);
   border-color: var(--accent-success);
   color: var(--accent-success);
+
+  &:hover {
+    background: rgba(74, 222, 128, 0.25);
+  }
 }
 
-.binaryDone:hover {
-  background: rgba(74, 222, 128, 0.25);
-}
-
-/* Rule Tracker */
+// Rule Tracker
 .ruleTracker {
   display: flex;
   flex-direction: column;
@@ -477,11 +480,11 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-}
 
-.dayBtn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  transform: scale(1.1);
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    transform: scale(1.1);
+  }
 }
 
 .dayToday {
@@ -526,14 +529,14 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background: var(--bg-hover);
+  }
 }
 
-.monthDay:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background: var(--bg-hover);
-}
-
-/* Daily habit tracker */
+// Daily habit tracker
 .dailyTracker {
   display: flex;
   justify-content: center;
@@ -558,37 +561,37 @@
   display: flex;
   align-items: center;
   gap: 6px;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background: var(--bg-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.dailyActive {
+    border-color: var(--accent-success);
+    background: rgba(var(--accent-success-rgb), 0.15);
+    color: var(--accent-success);
+  }
+
+  &.dailySuccess {
+    border-color: var(--accent-success);
+    background: var(--accent-success);
+    color: white;
+  }
+
+  &.dailyFail {
+    border-color: var(--accent-danger);
+    background: var(--accent-danger);
+    color: white;
+  }
 }
 
-.dailyBtn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background: var(--bg-hover);
-}
-
-.dailyBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.dailyBtn.dailyActive {
-  border-color: var(--accent-success);
-  background: rgba(var(--accent-success-rgb), 0.15);
-  color: var(--accent-success);
-}
-
-.dailyBtn.dailySuccess {
-  border-color: var(--accent-success);
-  background: var(--accent-success);
-  color: white;
-}
-
-.dailyBtn.dailyFail {
-  border-color: var(--accent-danger);
-  background: var(--accent-danger);
-  color: white;
-}
-
-/* Daily counter for multiple times per day */
+// Daily counter for multiple times per day
 .dailyCounter {
   display: flex;
   align-items: center;
@@ -621,16 +624,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.dailyCountBtn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background: var(--bg-hover);
-}
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background: var(--bg-hover);
+  }
 
-.dailyCountBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .dailyCountValue {
@@ -640,10 +643,10 @@
   color: var(--text-primary);
   min-width: 60px;
   text-align: center;
-}
 
-.dailyCountValue.dailyCountDone {
-  color: var(--accent-success);
+  &.dailyCountDone {
+    color: var(--accent-success);
+  }
 }
 
 .ruleStats {
@@ -652,7 +655,7 @@
   font-weight: 500;
 }
 
-/* Milestones to-do list */
+// Milestones to-do list
 .milestonesSection {
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
@@ -696,10 +699,14 @@
   background: var(--bg-tertiary);
   border-radius: var(--radius-sm);
   transition: all 0.2s ease;
-}
 
-.milestoneItem:hover {
-  background: var(--bg-hover);
+  &:hover {
+    background: var(--bg-hover);
+
+    .milestoneDelete {
+      opacity: 1;
+    }
+  }
 }
 
 .milestoneCheckbox {
@@ -710,14 +717,20 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-}
 
-.milestoneCheckbox input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+
+    &:checked ~ .checkmark {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+  }
 }
 
 .checkmark {
@@ -732,12 +745,6 @@
   color: transparent;
   transition: all 0.2s ease;
   background: var(--bg-card);
-}
-
-.milestoneCheckbox input:checked ~ .checkmark {
-  background: var(--accent-success);
-  border-color: var(--accent-success);
-  color: white;
 }
 
 .milestoneCheckbox:hover .checkmark {
@@ -766,14 +773,10 @@
   padding: 0 4px;
   transition: all 0.2s ease;
   line-height: 1;
-}
 
-.milestoneItem:hover .milestoneDelete {
-  opacity: 1;
-}
-
-.milestoneDelete:hover {
-  color: var(--accent-danger);
+  &:hover {
+    color: var(--accent-danger);
+  }
 }
 
 .addMilestone {
@@ -789,11 +792,11 @@
   border-radius: var(--radius-sm);
   background: var(--bg-card);
   color: var(--text-primary);
-}
 
-.addMilestoneInput:focus {
-  outline: none;
-  border-color: var(--accent-primary);
+  &:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+  }
 }
 
 .addMilestoneBtn {
@@ -810,18 +813,19 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
 }
 
-.addMilestoneBtn:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-.addMilestoneBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
+// Responsive
 @media (max-width: 600px) {
   .formRow {
     flex-direction: column;
@@ -847,5 +851,4 @@
     font-size: 28px;
   }
 }
-
 

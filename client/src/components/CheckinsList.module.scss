@@ -50,10 +50,10 @@
 .item {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
-}
 
-.item:last-child {
-  border-bottom: none;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .itemHeader {
@@ -98,7 +98,7 @@
   font-style: italic;
 }
 
-/* Create form */
+// Create form
 .createForm {
   padding: 20px;
   background: var(--bg-secondary);
@@ -192,5 +192,4 @@
     justify-content: space-between;
   }
 }
-
 

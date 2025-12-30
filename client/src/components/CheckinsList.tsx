@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import type { MonthlyCheckin, Goal, UpdateCheckinInput } from '../types';
 import { checkinsApi } from '../api';
 import { ConfirmDialog } from './ConfirmDialog';
-import styles from './CheckinsList.module.css';
+import styles from './CheckinsList.module.scss';
 
 interface CheckinsListProps {
   checkins: MonthlyCheckin[];

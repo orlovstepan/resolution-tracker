@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useCallback } from 'react';
 import type { Goal, GoalType, GoalStatus, CreateGoalInput, UpdateGoalInput, RuleType, RulePeriod, RuleLogEntry, Milestone } from '../types';
 import { goalsApi } from '../api';
 import { ConfirmDialog } from './ConfirmDialog';
-import styles from './GoalsList.module.css';
+import styles from './GoalsList.module.scss';
 
 interface GoalsListProps {
   goals: Goal[];

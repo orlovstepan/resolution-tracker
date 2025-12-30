@@ -78,10 +78,10 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-}
 
-.tab:hover {
-  color: var(--text-primary);
+  &:hover {
+    color: var(--text-primary);
+  }
 }
 
 .tabActive {
@@ -132,10 +132,9 @@
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
-}
 
-.link:hover {
-  color: var(--accent-secondary);
+  &:hover {
+    color: var(--accent-secondary);
+  }
 }
-
 

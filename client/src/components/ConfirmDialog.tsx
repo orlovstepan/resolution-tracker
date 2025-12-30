@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import styles from './ConfirmDialog.module.css';
+import styles from './ConfirmDialog.module.scss';
 
 interface ConfirmDialogProps {
   isOpen: boolean;

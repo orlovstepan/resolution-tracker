@@ -11,12 +11,12 @@
   width: 90%;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: dialogFadeIn 0.2s ease;
-}
 
-.dialog::backdrop {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  animation: backdropFadeIn 0.2s ease;
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: backdropFadeIn 0.2s ease;
+  }
 }
 
 @keyframes dialogFadeIn {
@@ -31,12 +31,8 @@
 }
 
 @keyframes backdropFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .content {
@@ -73,11 +69,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-}
 
-.cancelBtn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
+  &:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
 }
 
 .confirmBtn {
@@ -88,32 +84,26 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-}
 
-.confirmBtn.default {
-  background: var(--accent-primary);
-  color: white;
-}
+  &.default {
+    background: var(--accent-primary);
+    color: white;
 
-.confirmBtn.default:hover {
-  opacity: 0.9;
-}
+    &:hover { opacity: 0.9; }
+  }
 
-.confirmBtn.danger {
-  background: var(--accent-danger);
-  color: white;
-}
+  &.danger {
+    background: var(--accent-danger);
+    color: white;
 
-.confirmBtn.danger:hover {
-  opacity: 0.9;
-}
+    &:hover { opacity: 0.9; }
+  }
 
-.confirmBtn.warning {
-  background: var(--accent-warning);
-  color: var(--bg-primary);
-}
+  &.warning {
+    background: var(--accent-warning);
+    color: var(--bg-primary);
 
-.confirmBtn.warning:hover {
-  opacity: 0.9;
+    &:hover { opacity: 0.9; }
+  }
 }
 
