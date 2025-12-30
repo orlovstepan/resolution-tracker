@@ -56,11 +56,6 @@ export function ProgressSummary({ goals }: ProgressSummaryProps) {
   const completedMilestones = allMilestones.filter(m => m.done).length;
   const totalMilestones = allMilestones.length;
 
-  // Calculate rule compliance (for rule goals)
-  const ruleGoals = goals.filter(g => g.type === 'rule');
-  const avgRuleCompliance = ruleGoals.length > 0
-    ? ruleGoals.reduce((sum, g) => sum + g.value, 0) / ruleGoals.length
-    : null;
 
   return (
     <div className={styles.container}>

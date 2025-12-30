@@ -629,9 +629,6 @@ function GoalItem({
     );
   }
 
-  // Determine if we should show stepper (counter with target < 365)
-  const showStepper = goal.type === 'counter' && goal.target && goal.target < 365;
-
   const itemClasses = [
     styles.item,
     isDragging ? styles.itemDragging : '',
