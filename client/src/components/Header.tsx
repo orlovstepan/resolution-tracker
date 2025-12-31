@@ -1,5 +1,6 @@
 import type { User } from '../types';
 import styles from './Header.module.scss';
+import logo from '../assets/logo.png';
 
 interface HeaderProps {
   user: User;
@@ -11,7 +12,7 @@ export function Header({ user, onLogout }: HeaderProps) {
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.brand}>
-          <span className={styles.icon}>🎯</span>
+          <img src={logo} alt="Resolution Tracker" className={styles.logo} />
           <h1 className={styles.title}>Resolution Tracker</h1>
           <span className={styles.year}>2026</span>
         </div>

@@ -33,7 +33,7 @@
   margin-bottom: 32px;
 }
 
-.logo {
+.logoWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,8 +41,11 @@
   margin-bottom: 8px;
 }
 
-.logoIcon {
-  font-size: 32px;
+.logoImage {
+  width: 72px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .title {
@@ -52,6 +55,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.2;
+  display: inline-block;
 }
 
 .subtitle {

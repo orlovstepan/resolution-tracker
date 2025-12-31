@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { User } from '../types';
 import { authApi } from '../api';
 import styles from './AuthForm.module.scss';
+import logo from '../assets/logo.png';
 
 interface AuthFormProps {
   onSuccess: (user: User) => void;
@@ -35,8 +36,8 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>🎯</span>
+          <div className={styles.logoWrapper}>
+            <img src={logo} alt="Resolution Tracker" className={styles.logoImage} />
             <h1 className={styles.title}>Resolution Tracker</h1>
           </div>
           <p className={styles.subtitle}>Track your 2026 goals and monthly progress</p>
