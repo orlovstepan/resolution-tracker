@@ -79,13 +79,11 @@ router.post('/', async (req: AuthRequest, res: Response) => {
   try {
     const data = createGoalSchema.parse(req.body);
     
-    // Get the max sortOrder for this user
-    const maxOrderGoal = await prisma.goal.findFirst({
+    // Shift all existing goals down by 1 to make room at the top
+    await prisma.goal.updateMany({
       where: { userId: req.userId },
-      orderBy: { sortOrder: 'desc' },
-      select: { sortOrder: true },
+      data: { sortOrder: { increment: 1 } },
     });
-    const nextOrder = (maxOrderGoal?.sortOrder ?? -1) + 1;
     
     const goal = await prisma.goal.create({
       data: {
@@ -101,7 +99,7 @@ router.post('/', async (req: AuthRequest, res: Response) => {
         userId: req.userId!,
         value: 0,
         status: 'not_started',
-        sortOrder: nextOrder,
+        sortOrder: 0, // New goals go to the top
       },
     });
     

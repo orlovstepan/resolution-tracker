@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import type { Goal, GoalType, GoalStatus, CreateGoalInput, UpdateGoalInput, RuleType, RulePeriod, RuleLogEntry, Milestone } from '../types';
 import { goalsApi } from '../api';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -15,7 +15,20 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null);
+  const [scrollToGoalId, setScrollToGoalId] = useState<string | null>(null);
   const dragCounter = useRef(0);
+  const goalRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  // Scroll to goal after move
+  useEffect(() => {
+    if (scrollToGoalId) {
+      const element = goalRefs.current.get(scrollToGoalId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      setScrollToGoalId(null);
+    }
+  }, [scrollToGoalId, goals]);
 
   const handleCreate = async (data: CreateGoalInput) => {
     await goalsApi.create(data);
@@ -49,6 +62,7 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
 
   const handleMove = async (goalId: string, direction: 'up' | 'down') => {
     await goalsApi.reorder(goalId, direction);
+    setScrollToGoalId(goalId); // Scroll to keep the moved goal in view
     onUpdate();
   };
 
@@ -149,6 +163,10 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
             isLast={index === goals.length - 1}
             isDragging={draggedId === goal.id}
             isDragOver={dragOverId === goal.id}
+            itemRef={(el) => {
+              if (el) goalRefs.current.set(goal.id, el);
+              else goalRefs.current.delete(goal.id);
+            }}
             onEdit={() => setEditingId(goal.id)}
             onCancelEdit={() => setEditingId(null)}
             onUpdate={(data, skipRefresh) => handleUpdate(goal.id, data, skipRefresh)}
@@ -389,6 +407,7 @@ interface GoalItemProps {
   isLast: boolean;
   isDragging: boolean;
   isDragOver: boolean;
+  itemRef: (el: HTMLDivElement | null) => void;
   onEdit: () => void;
   onCancelEdit: () => void;
   onUpdate: (data: UpdateGoalInput, skipRefresh?: boolean) => void;
@@ -466,7 +485,7 @@ function parseMilestones(milestones: Milestone[] | string | undefined): Mileston
 }
 
 function GoalItem({ 
-  goal, isEditing, isFirst, isLast, isDragging, isDragOver,
+  goal, isEditing, isFirst, isLast, isDragging, isDragOver, itemRef,
   onEdit, onCancelEdit, onUpdate, onDelete, onMoveUp, onMoveDown,
   onDragStart, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop 
 }: GoalItemProps) {
@@ -671,6 +690,7 @@ function GoalItem({
 
   return (
     <div 
+      ref={itemRef}
       className={itemClasses}
       draggable
       onDragStart={onDragStart}
@@ -688,6 +708,7 @@ function GoalItem({
         </div>
         <div className={styles.itemActions}>
           <button 
+            onMouseDown={(e) => e.preventDefault()}
             onClick={onMoveUp} 
             className="btn-ghost btn-icon" 
             title="Move up"
@@ -696,6 +717,7 @@ function GoalItem({
             ↑
           </button>
           <button 
+            onMouseDown={(e) => e.preventDefault()}
             onClick={onMoveDown} 
             className="btn-ghost btn-icon" 
             title="Move down"
