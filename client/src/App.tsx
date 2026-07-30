@@ -36,6 +36,12 @@ function App() {
     }
   }, [user]);
 
+  const handleGoalUpdated = useCallback((updatedGoal: Goal) => {
+    setGoals((currentGoals) =>
+      currentGoals.map((goal) => goal.id === updatedGoal.id ? updatedGoal : goal)
+    );
+  }, []);
+
   // Load checkins when user or month changes
   const loadCheckins = useCallback(async () => {
     if (!user) return;
@@ -91,6 +97,7 @@ function App() {
           <GoalsList 
             goals={goals} 
             onUpdate={loadGoals}
+            onGoalUpdated={handleGoalUpdated}
           />
           
           <CheckinsList
@@ -107,5 +114,4 @@ function App() {
 }
 
 export default App;
-
 

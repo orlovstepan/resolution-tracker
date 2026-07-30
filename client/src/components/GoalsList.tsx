@@ -7,9 +7,10 @@ import styles from './GoalsList.module.scss';
 interface GoalsListProps {
   goals: Goal[];
   onUpdate: () => void;
+  onGoalUpdated: (goal: Goal) => void;
 }
 
-export function GoalsList({ goals, onUpdate }: GoalsListProps) {
+export function GoalsList({ goals, onUpdate, onGoalUpdated }: GoalsListProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -36,12 +37,10 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
     onUpdate();
   };
 
-  const handleUpdate = async (id: string, data: UpdateGoalInput, skipRefresh = false) => {
-    await goalsApi.update(id, data);
+  const handleUpdate = async (id: string, data: UpdateGoalInput) => {
+    const updatedGoal = await goalsApi.update(id, data);
+    onGoalUpdated(updatedGoal);
     setEditingId(null);
-    if (!skipRefresh) {
-      onUpdate();
-    }
   };
 
   const handleDeleteRequest = (id: string, title: string) => {
@@ -169,7 +168,7 @@ export function GoalsList({ goals, onUpdate }: GoalsListProps) {
             }}
             onEdit={() => setEditingId(goal.id)}
             onCancelEdit={() => setEditingId(null)}
-            onUpdate={(data, skipRefresh) => handleUpdate(goal.id, data, skipRefresh)}
+            onUpdate={(data) => handleUpdate(goal.id, data)}
             onDelete={() => handleDeleteRequest(goal.id, goal.title)}
             onMoveUp={() => handleMove(goal.id, 'up')}
             onMoveDown={() => handleMove(goal.id, 'down')}
@@ -410,7 +409,7 @@ interface GoalItemProps {
   itemRef: (el: HTMLDivElement | null) => void;
   onEdit: () => void;
   onCancelEdit: () => void;
-  onUpdate: (data: UpdateGoalInput, skipRefresh?: boolean) => void;
+  onUpdate: (data: UpdateGoalInput) => void;
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -440,6 +439,20 @@ function formatDateLocal(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+function formatValueHistory(goal: Goal): string {
+  const previousValue = goal.previousValue;
+  if (previousValue === null || previousValue === undefined) return '';
+
+  if (goal.type === 'binary') {
+    return previousValue >= 100 ? 'Completed' : 'Not completed';
+  }
+  if (goal.type === 'rule') {
+    return `${Math.round(previousValue)}%`;
+  }
+
+  return `${previousValue}${goal.unit ? ` ${goal.unit}` : ''}`;
 }
 
 function getWeekDates(): string[] {
@@ -526,7 +539,7 @@ function GoalItem({
       setStatus(newStatus);
     }
     if (v !== goal.value || newStatus !== goal.status) {
-      await onUpdate({ value: v, status: newStatus }, true); // skipRefresh = true
+      await onUpdate({ value: v, status: newStatus });
     }
   };
 
@@ -538,7 +551,7 @@ function GoalItem({
       ? 'done' 
       : newValue > 0 ? 'in_progress' : status;
     setStatus(newStatus);
-    await onUpdate({ value: newValue, status: newStatus }, true); // skipRefresh = true
+    await onUpdate({ value: newValue, status: newStatus });
   };
 
   const handleDecrement = async () => {
@@ -558,7 +571,7 @@ function GoalItem({
     if (newStatus !== status) {
       setStatus(newStatus);
     }
-    await onUpdate({ value: newValue, status: newStatus }, true); // skipRefresh = true
+    await onUpdate({ value: newValue, status: newStatus });
   };
 
   const handleRuleLog = async (date: string, success: boolean) => {
@@ -630,7 +643,7 @@ function GoalItem({
       m.id === milestoneId ? { ...m, done: !m.done } : m
     );
     setLocalMilestones(updatedMilestones);
-    await onUpdate({ milestones: updatedMilestones }, true);
+    await onUpdate({ milestones: updatedMilestones });
   };
 
   const handleAddMilestone = async () => {
@@ -642,14 +655,14 @@ function GoalItem({
     };
     const updatedMilestones = [...localMilestones, newMilestone];
     setLocalMilestones(updatedMilestones);
-    await onUpdate({ milestones: updatedMilestones }, true);
+    await onUpdate({ milestones: updatedMilestones });
     setNewMilestoneText('');
   };
 
   const handleDeleteMilestone = async (milestoneId: string) => {
     const updatedMilestones = localMilestones.filter(m => m.id !== milestoneId);
     setLocalMilestones(updatedMilestones);
-    await onUpdate({ milestones: updatedMilestones }, true);
+    await onUpdate({ milestones: updatedMilestones });
   };
 
   const statusColors: Record<GoalStatus, string> = {
@@ -669,6 +682,12 @@ function GoalItem({
     binary: '✓',
     rule: '📏',
   };
+  const valueChangedDate = goal.valueChangedAt ? new Date(goal.valueChangedAt) : null;
+  const hasValidValueChangedDate = valueChangedDate !== null && !Number.isNaN(valueChangedDate.getTime());
+  const formattedValueChangedDate = hasValidValueChangedDate
+    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(valueChangedDate)
+    : '';
+  const previousValueLabel = formatValueHistory(goal);
 
   if (isEditing) {
     return (
@@ -827,6 +846,26 @@ function GoalItem({
             {Math.round(currentProgress)}%
           </span>
         </div>
+
+        {hasValidValueChangedDate && (
+          <div className={styles.valueHistory}>
+            <span>
+              Last changed{' '}
+              <time
+                dateTime={goal.valueChangedAt!}
+                title={valueChangedDate!.toLocaleString()}
+              >
+                {formattedValueChangedDate}
+              </time>
+            </span>
+            {previousValueLabel && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>Previous: {previousValueLabel}</span>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Milestones to-do list - only show if there are milestones */}
         {localMilestones.length > 0 && (

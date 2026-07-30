@@ -28,6 +28,8 @@ export interface Goal {
   unit?: string | null;
   target?: number | null;
   value: number;
+  previousValue?: number | null;
+  valueChangedAt?: string | null;
   status: GoalStatus;
   nextMilestone?: string | null; // Deprecated, kept for compatibility
   milestones?: Milestone[] | string;
@@ -91,5 +93,4 @@ export interface UpdateCheckinInput {
   blocker?: string;
   notes?: string;
 }
-
 

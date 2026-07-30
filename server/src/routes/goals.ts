@@ -142,6 +142,10 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
     if (data.milestones) {
       updateData.milestones = JSON.stringify(data.milestones);
     }
+    if (data.value !== undefined && data.value !== existing.value) {
+      updateData.previousValue = existing.value;
+      updateData.valueChangedAt = new Date();
+    }
 
     const goal = await prisma.goal.update({
       where: { id },
@@ -273,5 +277,4 @@ router.post('/reorder-bulk', async (req: AuthRequest, res: Response) => {
 });
 
 export default router;
-
 

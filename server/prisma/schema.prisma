@@ -25,6 +25,8 @@ model Goal {
   unit          String?
   target        Float?
   value         Float     @default(0)
+  previousValue Float?
+  valueChangedAt DateTime?
   status        String    @default("not_started") // 'not_started' | 'in_progress' | 'done'
   nextMilestone String?   // Deprecated, kept for compatibility
   milestones    String    @default("[]") // JSON array of milestones [{id, text, done}]
@@ -52,4 +54,3 @@ model MonthlyCheckin {
 
   @@index([userId, monthKey])
 }
-
